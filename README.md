@@ -1,1 +1,1 @@
-# DJango Refresher
+# Django Refresher
