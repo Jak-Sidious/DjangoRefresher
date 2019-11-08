@@ -20,9 +20,9 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 
 urlpatterns = [
-    path('courses/', include('courses.urls')),
+    path('courses/', include('courses.urls', namespace='courses')),
     path('admin/', admin.site.urls),
-    path('', views.hello_world),
+    path('', views.hello_world, name='goHome'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

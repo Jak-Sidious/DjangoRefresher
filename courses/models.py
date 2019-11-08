@@ -12,8 +12,9 @@ class Course(models.Model):
 class Step(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
+    content = models.TextField(blank=True, default='')
     order = models.IntegerField(default=0)
-    course = models.name = models.ForeignKey('Course', related_name='Course_Steps', on_delete=models.CASCADE)
+    course = models.name = models.ForeignKey(Course,on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['order',]

@@ -7,8 +7,12 @@
         </head>
         <body>
             <div class="site-container">
+                <nav>
+                    <a href="{% url 'goHome' %}">Home</a>
+                    <a href="{% url 'courses:list' %}">Courses</a>
+                </nav>
             {% block content%} {% endblock %}
             </div>
-            
         </body>
     </html>
+

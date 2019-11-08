@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
-{% block title %}{{course.title}} {% endblock %}
+{% block title %} {{course.title}} {% endblock %}
+
 {% block content %}
 <article>
     <h2>{{course.title}}</h2>
@@ -8,8 +9,9 @@
 
     <section>
         {% for step in course.step_set.all %}
-            <h3>{{step.title}}</h3>
-            {{step.description}}
+            <h3>
+                <a href="{% url 'courses:step' course_pk=step.course.pk step_pk=step.pk %}">{{ step.title }}</a></h3>
+            {{ step.description }}
         {% endfor %}
     </section>
 </article>
