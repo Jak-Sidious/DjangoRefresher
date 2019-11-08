@@ -1,8 +1,8 @@
 from django.contrib import admin
 from . models import Course, Step
 
-# You can also use stepinline
-class StepInline(admin.TabularInline):
+# You can also use StackedInline or
+class StepInline(admin.StackedInline):
     model = Step
 
 class CourseAdmin(admin.ModelAdmin):

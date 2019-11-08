@@ -15,5 +15,8 @@ class Step(models.Model):
     order = models.IntegerField(default=0)
     course = models.name = models.ForeignKey('Course', related_name='Course_Steps', on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ['order',]
+
     def __str__(self):
         return self.title
