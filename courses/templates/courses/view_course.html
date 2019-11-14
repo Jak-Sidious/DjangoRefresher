@@ -7,6 +7,7 @@
     <h2>{{course.title}}</h2>
     {{course.description}}
 
+    <p> These are the step(s) in this course: </p>
     <section>
         {% for step in course.step_set.all %}
             <h3>
