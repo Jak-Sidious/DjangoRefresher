@@ -5,7 +5,9 @@ from .models import Course, Step
 
 def all_courses(request):
     courses = Course.objects.all()
-    return render(request, 'courses/all_courses.html', {'courses': courses})
+    email = 'questions@learning_site.com'
+    return render(request, 'courses/all_courses.html', {'courses': courses,
+                                                        'email': email})
 
 def view_course(request, pk):
     course = get_object_or_404(Course, pk=pk)
