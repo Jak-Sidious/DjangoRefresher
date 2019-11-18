@@ -7,7 +7,10 @@
     <h2><a href="{% url 'courses:detail' pk=step.course.pk %}">{{ step.course.title }}</a></h2>
     <h3>{{step.title}}</h3>
     {% with con=step.content %}
-        {{ con|linebreaks }} Content : {{ con|wordcount }} words
+        {{ con|linebreaks }} 
+        Content : {{ con|wordcount }} words. Estimated time to complete : 
+        {{con|wordcount|time_estimate}} minute
+        {{con|wordcount|time_estimate|pluralize}}
     {% endwith %}
 </article>
 {% endblock %}

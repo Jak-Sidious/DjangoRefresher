@@ -20,7 +20,7 @@ def time_estimate(word_count):
     '''Estimates numbe of minutes it will take to complete a step based on the 
     passed in wordcount.'''
     minutes = round(word_count/20)
-    return minuytes
+    return minutes
 
 #register.inclusion_tag('courses/course_nav.html')(nav_courses_list) Option 1 for template tag that renders a new template
 
