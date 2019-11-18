@@ -23,6 +23,7 @@ urlpatterns = [
     path('courses/', include('courses.urls', namespace='courses')),
     path('admin/', admin.site.urls),
     path('', views.hello_world, name='goHome'),
+    path('suggest/', views.suggestion_view, name='suggestion'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
