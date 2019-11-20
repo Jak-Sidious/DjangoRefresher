@@ -58,6 +58,12 @@ class Question(models.Model):
     def __str__(self):
         return self.prompt
 
+class MultipleChoiceQuestion(Question):
+    shuffle_answers = models.BooleanField(default=False)
+
+class TrueFalseQuestion(Question):
+    pass
+
 
 class Answer(models.Model):
     question = models.ForeignKey(Question,on_delete=models.CASCADE)
