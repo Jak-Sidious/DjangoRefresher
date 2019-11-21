@@ -14,9 +14,11 @@
             <h1>{{ step.title }}</h1>
             Quiz questions here 
         </article>
-        {% if user.is_authenticated %}
+        {% comment %} {% if user.is_authenticated %} {% endcomment %}
             <hr>
                 <a href="{% url 'courses:edit_quiz' course_pk=step.course.pk quiz_pk=step.pk %}" class="button">Edit Quiz</a>
-        {% endif %}
+                <a href="{% url 'courses:create_question' quiz_pk=step.pk question_type='mc' %}" class="button">New Multiple Choice Question</a>
+                <a href="{% url 'courses:create_question' quiz_pk=step.pk question_type='tf' %}" class="button">New True/False question</a> 
+        {% comment %} {% endif %} {% endcomment %}
     </div>
 {% endblock %}
