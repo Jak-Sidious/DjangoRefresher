@@ -1,3 +1,4 @@
+'''Method to deal with the urls within the courses app'''
 from django.conf.urls import url
 
 from . import views

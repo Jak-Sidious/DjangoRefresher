@@ -1,3 +1,4 @@
+'''Class that deals with the admin view inside the courses app'''
 from django.contrib import admin
 from . import models
 
@@ -7,7 +8,6 @@ from . import models
 
 # class CourseAdmin(admin.ModelAdmin):
 #     inlines = [TextInline,]
-    
 
 admin.site.register(models.Course)
 admin.site.register(models.Text)

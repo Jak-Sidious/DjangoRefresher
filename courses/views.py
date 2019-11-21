@@ -1,6 +1,7 @@
+'''Module that describes the views for the courses app.'''
 from itertools import chain
 from django.shortcuts import render, get_object_or_404
-from django.contrib import messages 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 
@@ -14,13 +15,13 @@ def all_courses(request):
     return render(request, 'courses/all_courses.html', {'courses': courses,
                                                         'email': email})
 
-def view_course(request, pk): 
+def view_course(request, pk):
     course = get_object_or_404(models.Course, pk=pk)
     steps = sorted(chain(course.text_set.all(), course.quiz_set.all()),
-                    key=lambda step: step.order)
+                   key=lambda step: step.order)
     return render(request, 'courses/view_course.html', {
-            'course': course,
-            'steps': steps
+        'course': course,
+        'steps': steps
         })
 
 def text_detail(request, course_pk, step_pk):
@@ -42,9 +43,14 @@ def quiz_create(request, course_pk):
             quiz.course = course
             quiz.save()
             messages.add_message(request, messages.SUCCESS,
-                                "Quiz Added!")
+                                 "Quiz Added!")
             return HttpResponseRedirect(quiz.get_absolute_url())
     return render(request, 'courses/quiz_form.html', {
-                                                        'form': form, 
-                                                        'course': course
-                                                        })
+        'form': form,
+        'course': course
+        })
+
+##TODO combine this method and the one above into one method
+@login_required
+def quiz_edit(request, course_pk, quiz_pk):
+    quiz = get_object_or_404(models.Quiz, pk=quiz_pk)
