@@ -53,4 +53,12 @@ def quiz_create(request, course_pk):
 ##TODO combine this method and the one above into one method
 @login_required
 def quiz_edit(request, course_pk, quiz_pk):
-    quiz = get_object_or_404(models.Quiz, pk=quiz_pk)
+    quiz = get_object_or_404(models.Quiz, pk=quiz_pk, course_id=course_pk)
+    form = forms.QuizForm(instance=quiz)
+    if request.method == "POST":
+        form = forms.QuizForm(instance=quiz, data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Updated {}".format(form.cleaned_data['title']))
+            return HttpResponseRedirect(quiz.get_absolute_url())
+    return render(request, 'courses/quiz_form.html', {'form': form, 'course': quiz.course})
