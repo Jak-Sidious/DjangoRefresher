@@ -15,14 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from . import views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from . import views
 
 
 urlpatterns = [
     path('courses/', include('courses.urls', namespace='courses')),
     path('admin/', admin.site.urls),
     path('', views.hello_world, name='goHome'),
+    path('suggest/', views.suggestion_view, name='suggestion'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
