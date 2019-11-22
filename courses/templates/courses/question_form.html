@@ -1,7 +1,7 @@
 {% extends "courses/layout.html" %}
 {% load course_extras %}
 
-{% block title %}New Question for {{quiz.title}} | {{ quiz.course.title }} {{block.super}} {% endblock %}
+{% block title %}{{ form.instance.prompt|default:"New Question" }}| {{ quiz.course.title }} {{block.super}} {% endblock %}
 
 {% block breadcrumbs %}
     <li><a href="{% url 'courses:detail' pk=quiz.course.pk %}">{{ quiz.course.title}}</a></li>
@@ -9,12 +9,16 @@
 {% endblock %} 
 
 {% block content %}
-    <div class="row columns">
+    <div class="row columns"> 
         {{block.super}}
-        <h1>Make a new Question</h1>
+        <h1>{{ form.instance.prompt|default:"Make a new Question" }}</h1>
         <form method="POST" action="">
             {% csrf_token %}
             {{ form.as_p }}
             <input type="submit" class="button" value="SAVE">
         </form>
+        {% if user.is_authenticated and form.instance.pk %}
+            <hr>
+            <a href="{% url 'courses:create_answer' question_pk=form.instance.pk %}" class="button">Add Answer</a>
+        {% endif %}
 {% endblock %}

@@ -63,7 +63,7 @@ def quiz_edit(request, course_pk, quiz_pk):
             return HttpResponseRedirect(quiz.get_absolute_url())
     return render(request, 'courses/quiz_form.html', {'form': form, 'course': quiz.course})
 
-# @login_required
+@login_required
 def create_question(request, quiz_pk, question_type):
     quiz = get_object_or_404(models.Quiz, pk=quiz_pk)
     if question_type == 'tf':
@@ -83,5 +83,46 @@ def create_question(request, quiz_pk, question_type):
             return HttpResponseRedirect(quiz.get_absolute_url())
     return render(request, 'courses/question_form.html', {
         'quiz': quiz,
+        'form': form
+    })
+
+@login_required
+def edit_question(request, quiz_pk, question_pk):
+    question = get_object_or_404(models.Question, 
+                                 pk=question_pk, quiz_id=quiz_pk)
+    if hasattr(question, 'truefalsequestion'):
+        form_class = forms.TrueFalseQuestionForm
+        question = question.truefalsequestion
+    else:
+        form_class = forms.MultipleChoiceQuestionForm
+        question = question.multiplechoicequestion
+    form = form_class(instance=question)
+
+
+    if request.method == 'POST':
+        form = form_class(request.POST, instance=question)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Updated question")
+            return HttpResponseRedirect(question.quiz.get_absolute_url())
+    return render(request, 'courses/question_form.html', {'form': form,
+                  'quiz': question.quiz})
+
+@login_required
+def answer_form(request, question_pk):
+    question = get_object_or_404(models.Question, pk=question_pk)
+
+    form = forms.AnswerForm()
+
+    if request.method == 'POST':
+        form = forms.AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save(commit=False)
+            answer.question = question
+            answer.save()
+            messages.success(request, "answer added")
+            return HttpResponseRedirect(question.get_absolute_url())
+    return render(request, "courses/answer_form.html", {
+        'question': question,
         'form': form
     })
