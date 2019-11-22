@@ -3,19 +3,21 @@ from itertools import chain
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 
 from . import forms
 from . import models
 # Create your views here.
 
 def all_courses(request):
+    '''View method to display all courses'''
     courses = models.Course.objects.all()
     email = 'questions@learning_site.com'
     return render(request, 'courses/all_courses.html', {'courses': courses,
                                                         'email': email})
 
 def view_course(request, pk):
+    '''View method to display a single course'''
     course = get_object_or_404(models.Course, pk=pk)
     steps = sorted(chain(course.text_set.all(), course.quiz_set.all()),
                    key=lambda step: step.order)
@@ -25,15 +27,18 @@ def view_course(request, pk):
         })
 
 def text_detail(request, course_pk, step_pk):
+    '''Method to display the steps in a course'''
     step = get_object_or_404(models.Text, course_id=course_pk, pk=step_pk)
     return render(request, 'courses/step_detail.html', {'step': step})
 
 def quiz_detail(request, course_pk, step_pk):
+    '''Method to display the details of a quiz'''
     step = get_object_or_404(models.Quiz, course_id=course_pk, pk=step_pk)
     return render(request, 'courses/quiz_detail.html', {'step': step})
 
 @login_required
 def quiz_create(request, course_pk):
+    '''Method to create a quiz inside a course'''
     course = get_object_or_404(models.Course, pk=course_pk)
     form = forms.QuizForm()
     if request.method == 'POST':
@@ -53,6 +58,7 @@ def quiz_create(request, course_pk):
 ##TODO combine this method and the one above into one method
 @login_required
 def quiz_edit(request, course_pk, quiz_pk):
+    '''Method to edit the details of an existing quiz'''
     quiz = get_object_or_404(models.Quiz, pk=quiz_pk, course_id=course_pk)
     form = forms.QuizForm(instance=quiz)
     if request.method == "POST":
@@ -65,12 +71,12 @@ def quiz_edit(request, course_pk, quiz_pk):
 
 @login_required
 def create_question(request, quiz_pk, question_type):
+    '''Method to create a question inside a quiz'''
     quiz = get_object_or_404(models.Quiz, pk=quiz_pk)
     if question_type == 'tf':
         form_class = forms.TrueFalseQuestionForm
     else:
         form_class = forms.MultipleChoiceQuestionForm
-    
     form = form_class()
     answer_forms = forms.AnswerInlineFormSet(
         queryset=models.Answer.objects.none()
@@ -86,7 +92,7 @@ def create_question(request, quiz_pk, question_type):
             question = form.save(commit=False)
             question.quiz = quiz
             question.save()
-            answers = answer_froms.save(commit=False)
+            answers = answer_forms.save(commit=False)
             for answer in answers:
                 answer.question = question
                 answer.save()
@@ -100,7 +106,8 @@ def create_question(request, quiz_pk, question_type):
 
 @login_required
 def edit_question(request, quiz_pk, question_pk):
-    question = get_object_or_404(models.Question, 
+    '''Method to edit a previous existing question'''
+    question = get_object_or_404(models.Question,
                                  pk=question_pk, quiz_id=quiz_pk)
     if hasattr(question, 'truefalsequestion'):
         form_class = forms.TrueFalseQuestionForm
@@ -113,7 +120,6 @@ def edit_question(request, quiz_pk, question_pk):
         queryset=form.instance.answer_set.all()
     )
 
- 
     if request.method == 'POST':
         form = form_class(request.POST, instance=question)
         answer_forms = forms.AnswerInlineFormSet(
@@ -132,20 +138,21 @@ def edit_question(request, quiz_pk, question_pk):
             messages.success(request, "Updated question")
             return HttpResponseRedirect(question.quiz.get_absolute_url())
     return render(request, 'courses/question_form.html', {
-                  'form': form,
-                  'quiz': question.quiz,
-                  'formset': answer_forms
+        'form': form,
+        'quiz': question.quiz,
+        'formset': answer_forms
     })
 
 @login_required
 def answer_form(request, question_pk):
+    '''Method to display an answer form'''
     question = get_object_or_404(models.Question, pk=question_pk)
 
     formset = forms.AnswerFormSet(queryset=question.answer_set.all())
 
     if request.method == 'POST':
         formset = forms.AnswerFormSet(request.POST,
-                                    queryset=question.answer_set.all())
+                                      queryset=question.answer_set.all())
 
         if formset.is_valid():
             answers = formset.save(commit=False)

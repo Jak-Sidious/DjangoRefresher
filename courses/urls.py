@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'(?P<quiz_pk>\d+)/create_question/(?P<question_type>mc|tf)/$',
         views.create_question, name="create_question"),
     url(r'(?P<question_pk>\d+)/create_answer/$', views.answer_form, name="create_answer"),
-    url(r'(?P<quiz_pk>\d+)/edit_question/(?P<question_pk>\d+)$', views.edit_question, name="edit_question"),
+    url(r'(?P<quiz_pk>\d+)/edit_question/(?P<question_pk>\d+)$',
+        views.edit_question, name="edit_question"),
 ]
  

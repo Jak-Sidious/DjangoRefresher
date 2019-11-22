@@ -15,7 +15,9 @@ class QuizForm(forms.ModelForm):
         ]
 
 class QuestionForm(forms.ModelForm):
+    '''Method to create a form that utilises external css'''
     class Media:
+        '''Media data that is utilised by this form'''
         css = {'all':('courses/css/order.css',)}
         js = (
             'courses/js/vendor/jquery.fn.sortable.min.js',
@@ -41,7 +43,9 @@ class MultipleChoiceQuestionForm(QuestionForm):
         ]
 
 class AnswerForm(forms.ModelForm):
+    '''Model form that deals with the Answer model'''
     class Meta:
+        '''Metadata for the AnswerForm Class'''
         model = models.Answer
         fields = [
             'order',
