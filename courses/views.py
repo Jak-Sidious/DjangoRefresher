@@ -86,7 +86,7 @@ def create_question(request, quiz_pk, question_type):
         form = form_class(request.POST)
         answer_forms = forms.AnswerInlineFormSet(
             request.POST,
-            queryset=models.Answer.onjects.none()
+            queryset=models.Answer.objects.none()
         )
         if form.is_valid() and answer_forms.is_valid():
             question = form.save(commit=False)
@@ -166,3 +166,13 @@ def answer_form(request, question_pk):
         'question': question,
         'formset': formset
     })
+
+def courses_by_teacher(request, teacher):
+    courses = models.Course.objects.filter(teacher__username="teacher")
+    return render(request, 'courses/all_courses.html', {'courses': courses})
+
+def search(request):
+    term = request.GET.get('q')
+    courses = models.Course.objects.filter(title__icontains=term)
+    ## Can use 
+    return render(request, 'courses/all_courses.html', {'courses': courses})

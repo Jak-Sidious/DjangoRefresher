@@ -17,5 +17,7 @@ urlpatterns = [
     url(r'(?P<question_pk>\d+)/create_answer/$', views.answer_form, name="create_answer"),
     url(r'(?P<quiz_pk>\d+)/edit_question/(?P<question_pk>\d+)$',
         views.edit_question, name="edit_question"),
+    url(r'search/$', views.search, name='search'),
+    url(r'by/(?P<teacher>)[-\w]+', views.courses_by_teacher, name='by_teacher'),
 ]
- 
+  
