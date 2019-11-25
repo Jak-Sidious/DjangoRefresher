@@ -3,7 +3,8 @@ from itertools import chain
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
+from django.db.models import Q, Count, Sum
+from django.http import HttpResponseRedirect, Http404
 
 from . import forms
 from . import models
@@ -11,16 +12,27 @@ from . import models
 
 def all_courses(request):
     '''View method to display all courses'''
-    courses = models.Course.objects.all()
+    courses = models.Course.objects.filter(
+        published=True
+    ).annotate(
+        total_steps=Count('text', distinct=True) +Count('quiz', distinct=True))
+    total = courses.aggregate(total=Sum('total_steps'))
     email = 'questions@learning_site.com'
     return render(request, 'courses/all_courses.html', {'courses': courses,
-                                                        'email': email})
+                                                        'email': email,
+                                                        'total': total})
 
 def view_course(request, pk):
     '''View method to display a single course'''
-    course = get_object_or_404(models.Course, pk=pk)
-    steps = sorted(chain(course.text_set.all(), course.quiz_set.all()),
-                   key=lambda step: step.order)
+    try:
+        course = models.Course.objects.prefetch_related(
+            'quiz_set', 'text_set', 'quiz_set__question_set'
+        ).get(pk=pk, published=True)
+    except models.Course.DoesNotExist:
+        raise Http404
+    else:
+        steps = sorted(chain(course.text_set.all(), course.quiz_set.all()),
+                    key=lambda step: step.order)
     return render(request, 'courses/view_course.html', {
         'course': course,
         'steps': steps
@@ -28,18 +40,33 @@ def view_course(request, pk):
 
 def text_detail(request, course_pk, step_pk):
     '''Method to display the steps in a course'''
-    step = get_object_or_404(models.Text, course_id=course_pk, pk=step_pk)
+    step = get_object_or_404(models.Text, course_id=course_pk, pk=step_pk,
+                            course__published=True)
     return render(request, 'courses/step_detail.html', {'step': step})
 
 def quiz_detail(request, course_pk, step_pk):
     '''Method to display the details of a quiz'''
-    step = get_object_or_404(models.Quiz, course_id=course_pk, pk=step_pk)
-    return render(request, 'courses/quiz_detail.html', {'step': step})
+    try:
+        step = models.Quiz.objects.select_related(
+            'course'
+        ).prefetch_related(
+            'question_set',
+            'question_set__answer_set'
+        ).get(
+                course_id=course_pk, 
+                pk=step_pk, 
+                course__published=True
+        )
+    except model.Quiz.DoesNotExist:
+        raise Http404
+    else:
+        return render(request, 'courses/quiz_detail.html', {'step': step})
 
 @login_required
 def quiz_create(request, course_pk):
     '''Method to create a quiz inside a course'''
-    course = get_object_or_404(models.Course, pk=course_pk)
+    course = get_object_or_404(models.Course, pk=course_pk, 
+                                course__published=True)
     form = forms.QuizForm()
     if request.method == 'POST':
         form = forms.QuizForm(request.POST)
@@ -59,7 +86,8 @@ def quiz_create(request, course_pk):
 @login_required
 def quiz_edit(request, course_pk, quiz_pk):
     '''Method to edit the details of an existing quiz'''
-    quiz = get_object_or_404(models.Quiz, pk=quiz_pk, course_id=course_pk)
+    quiz = get_object_or_404(models.Quiz, pk=quiz_pk, course_id=course_pk,
+                            course__published=True)
     form = forms.QuizForm(instance=quiz)
     if request.method == "POST":
         form = forms.QuizForm(instance=quiz, data=request.POST)
@@ -86,7 +114,7 @@ def create_question(request, quiz_pk, question_type):
         form = form_class(request.POST)
         answer_forms = forms.AnswerInlineFormSet(
             request.POST,
-            queryset=models.Answer.onjects.none()
+            queryset=models.Answer.objects.none()
         )
         if form.is_valid() and answer_forms.is_valid():
             question = form.save(commit=False)
@@ -166,3 +194,16 @@ def answer_form(request, question_pk):
         'question': question,
         'formset': formset
     })
+
+def courses_by_teacher(request, teacher):
+    courses = models.Course.objects.filter(teacher__username="teacher",
+                                           published=True)
+    return render(request, 'courses/all_courses.html', {'courses': courses})
+
+def search(request):
+    term = request.GET.get('q')
+    courses = models.Course.objects.filter(
+        Q(title__icontains=term)| Q(description__icontains=term),
+        published=True
+    )
+    return render(request, 'courses/all_courses.html', {'courses': courses})
