@@ -3,7 +3,7 @@ from itertools import chain
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, Count, Sum
 from django.http import HttpResponseRedirect
 
 from . import forms
@@ -12,10 +12,15 @@ from . import models
 
 def all_courses(request):
     '''View method to display all courses'''
-    courses = models.Course.objects.filter(published=True)
+    courses = models.Course.objects.filter(
+        published=True
+    ).annotate(
+        total_steps=Count('text', distinct=True) +Count('quiz', distinct=True))
+    total = courses.aggregate(total=Sum('total_steps'))
     email = 'questions@learning_site.com'
     return render(request, 'courses/all_courses.html', {'courses': courses,
-                                                        'email': email})
+                                                        'email': email,
+                                                        'total': total})
 
 def view_course(request, pk):
     '''View method to display a single course'''
