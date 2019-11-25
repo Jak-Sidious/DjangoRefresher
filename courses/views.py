@@ -3,6 +3,7 @@ from itertools import chain
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 
 from . import forms
@@ -178,7 +179,8 @@ def courses_by_teacher(request, teacher):
 
 def search(request):
     term = request.GET.get('q')
-    courses = models.Course.objects.filter(title__icontains=term, 
-                                            published=True)
-    ## Can use 
+    courses = models.Course.objects.filter(
+        Q(title__icontains=term)| Q(description__icontains=term),
+        published=True
+    )
     return render(request, 'courses/all_courses.html', {'courses': courses})
