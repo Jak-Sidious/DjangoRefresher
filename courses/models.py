@@ -48,6 +48,7 @@ class Text(Step):
 class Quiz(Step):
     '''Model that deals witht he quizzes offered in our learning site'''
     total_questions = models.IntegerField(default=4)
+    times_taken = models.IntegerField(default=0, editable=False)
 
     class Meta:
         '''Metadata for the Quiz class pertaining to how it appears in the admin
