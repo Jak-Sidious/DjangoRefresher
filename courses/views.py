@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Count, Sum
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 
 from . import forms
 from . import models
@@ -24,9 +24,15 @@ def all_courses(request):
 
 def view_course(request, pk):
     '''View method to display a single course'''
-    course = get_object_or_404(models.Course, pk=pk, published=True)
-    steps = sorted(chain(course.text_set.all(), course.quiz_set.all()),
-                   key=lambda step: step.order)
+    try:
+        course = models.Course.objects.prefetch_related(
+            'quiz_set', 'text_set', 'quiz_set__question_set'
+        ).get(pk=pk, published=True)
+    except models.Course.DoesNotExist:
+        raise Http404
+    else:
+        steps = sorted(chain(course.text_set.all(), course.quiz_set.all()),
+                    key=lambda step: step.order)
     return render(request, 'courses/view_course.html', {
         'course': course,
         'steps': steps
@@ -40,9 +46,21 @@ def text_detail(request, course_pk, step_pk):
 
 def quiz_detail(request, course_pk, step_pk):
     '''Method to display the details of a quiz'''
-    step = get_object_or_404(models.Quiz, course_id=course_pk, pk=step_pk,
-                            course__published=True)
-    return render(request, 'courses/quiz_detail.html', {'step': step})
+    try:
+        step = models.Quiz.objects.select_related(
+            'course'
+        ).prefetch_related(
+            'question_set',
+            'question_set__answer_set'
+        ).get(
+                course_id=course_pk, 
+                pk=step_pk, 
+                course__published=True
+        )
+    except model.Quiz.DoesNotExist:
+        raise Http404
+    else:
+        return render(request, 'courses/quiz_detail.html', {'step': step})
 
 @login_required
 def quiz_create(request, course_pk):
