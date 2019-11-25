@@ -10,12 +10,12 @@ register = template.Library()
 @register.simple_tag #Option 2 in the form of a decorator
 def newest_course():
     '''Gets the most recent course that was added to the Library.'''
-    return Course.objects.latest('created_at')
+    return Course.objects.filter(published=True).latest('created_at')
 
 @register.inclusion_tag('courses/course_nav.html')
 def nav_courses_list():
     ''' Returns dict of courses to display as navigation pane.'''
-    courses = Course.objects.all()
+    courses = Course.objects.filter(published=True)
     return {'courses': courses}
 
 # Custom filters begin here

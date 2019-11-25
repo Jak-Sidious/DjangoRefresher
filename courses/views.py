@@ -11,14 +11,14 @@ from . import models
 
 def all_courses(request):
     '''View method to display all courses'''
-    courses = models.Course.objects.all()
+    courses = models.Course.objects.filter(published=True)
     email = 'questions@learning_site.com'
     return render(request, 'courses/all_courses.html', {'courses': courses,
                                                         'email': email})
 
 def view_course(request, pk):
     '''View method to display a single course'''
-    course = get_object_or_404(models.Course, pk=pk)
+    course = get_object_or_404(models.Course, pk=pk, published=True)
     steps = sorted(chain(course.text_set.all(), course.quiz_set.all()),
                    key=lambda step: step.order)
     return render(request, 'courses/view_course.html', {
@@ -28,18 +28,21 @@ def view_course(request, pk):
 
 def text_detail(request, course_pk, step_pk):
     '''Method to display the steps in a course'''
-    step = get_object_or_404(models.Text, course_id=course_pk, pk=step_pk)
+    step = get_object_or_404(models.Text, course_id=course_pk, pk=step_pk,
+                            course__published=True)
     return render(request, 'courses/step_detail.html', {'step': step})
 
 def quiz_detail(request, course_pk, step_pk):
     '''Method to display the details of a quiz'''
-    step = get_object_or_404(models.Quiz, course_id=course_pk, pk=step_pk)
+    step = get_object_or_404(models.Quiz, course_id=course_pk, pk=step_pk,
+                            course__published=True)
     return render(request, 'courses/quiz_detail.html', {'step': step})
 
 @login_required
 def quiz_create(request, course_pk):
     '''Method to create a quiz inside a course'''
-    course = get_object_or_404(models.Course, pk=course_pk)
+    course = get_object_or_404(models.Course, pk=course_pk, 
+                                course__published=True)
     form = forms.QuizForm()
     if request.method == 'POST':
         form = forms.QuizForm(request.POST)
@@ -59,7 +62,8 @@ def quiz_create(request, course_pk):
 @login_required
 def quiz_edit(request, course_pk, quiz_pk):
     '''Method to edit the details of an existing quiz'''
-    quiz = get_object_or_404(models.Quiz, pk=quiz_pk, course_id=course_pk)
+    quiz = get_object_or_404(models.Quiz, pk=quiz_pk, course_id=course_pk,
+                            course__published=True)
     form = forms.QuizForm(instance=quiz)
     if request.method == "POST":
         form = forms.QuizForm(instance=quiz, data=request.POST)
@@ -168,11 +172,13 @@ def answer_form(request, question_pk):
     })
 
 def courses_by_teacher(request, teacher):
-    courses = models.Course.objects.filter(teacher__username="teacher")
+    courses = models.Course.objects.filter(teacher__username="teacher",
+                                           published=True)
     return render(request, 'courses/all_courses.html', {'courses': courses})
 
 def search(request):
     term = request.GET.get('q')
-    courses = models.Course.objects.filter(title__icontains=term)
+    courses = models.Course.objects.filter(title__icontains=term, 
+                                            published=True)
     ## Can use 
     return render(request, 'courses/all_courses.html', {'courses': courses})
