@@ -39,6 +39,8 @@ class CourseAdmin(admin.ModelAdmin):
 
     list_filter = ['created_at', YearListFilter]
 
+    list_display = ['title', 'created_at']
+
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [AnswerInline,]
 
