@@ -17,6 +17,10 @@ class Course(models.Model):
     def __str__(self):
         return self.title
 
+    def time_to_complete(self):
+        from courses.templatetags.course_extras import time_estimate
+        return '{} min'.format(time_estimate(len(self.description.split())))
+
 class Step(models.Model):
     ''' Step Module that deals with all the steps involved in a a particular
     course.

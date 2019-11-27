@@ -39,7 +39,7 @@ class CourseAdmin(admin.ModelAdmin):
 
     list_filter = ['created_at', YearListFilter]
 
-    list_display = ['title', 'created_at']
+    list_display = ['title', 'created_at', 'time_to_complete']
 
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [AnswerInline,]
