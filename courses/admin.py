@@ -3,6 +3,11 @@ from django.contrib import admin
 from . import models
 from datetime import date
 
+def make_published(modeladmin, request, queryset):
+    queryset.update(status='p')
+
+make_published.short_description = "Mark course as published"
+
 # You can also use StackedInline or
 class TextInline(admin.StackedInline):
     model = models.Text
@@ -39,7 +44,15 @@ class CourseAdmin(admin.ModelAdmin):
 
     list_filter = ['created_at', YearListFilter]
 
-    list_display = ['title', 'created_at', 'time_to_complete']
+    list_display = ['title', 'created_at', 'time_to_complete', 'status']
+
+    actions = [make_published]
+
+    class Media:
+        js = ('js/vendor/markdown.js', 'js/preview.js')
+        css = {
+            'all': ('css/preview.css',)
+        }
 
 class QuestionAdmin(admin.ModelAdmin):
     inlines = [AnswerInline,]
