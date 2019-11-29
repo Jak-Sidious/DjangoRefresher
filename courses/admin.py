@@ -7,7 +7,7 @@ from datetime import date
 class TextInline(admin.StackedInline):
     model = models.Text
 
-class QuizInline(admin.StackedInline):
+class QuizInline(admin.TabularInline):
     model = models.Quiz
 
 class AnswerInline(admin.StackedInline):
@@ -49,6 +49,8 @@ class QuestionAdmin(admin.ModelAdmin):
     list_display = ['prompt', 'quiz', 'order']
 
     list_editable = ['quiz', 'order']
+
+    radio_fields = {'quiz': admin.HORIZONTAL}
 
 class QuizAdmin(admin.ModelAdmin):
     fields = ['course', 'title', 'description', 'order', 'total_questions']
