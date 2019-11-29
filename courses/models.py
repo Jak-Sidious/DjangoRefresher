@@ -4,6 +4,12 @@ from django.urls import reverse
 
 from django.contrib.auth.models import User
 
+STATUS_CHOICES = (
+    ('i', 'In Progress'),
+    ('r', 'In Review'),
+    ('p', 'Published')
+)
+
 # Create your models here.
 class Course(models.Model):
     '''The course model for all courses.'''
@@ -13,9 +19,14 @@ class Course(models.Model):
     teacher = models.ForeignKey(User, on_delete=models.CASCADE)
     subject = models.CharField(default='', max_length=100)
     published = models.BooleanField(default=False)
+    status = models.CharField(max_length=1, choices= STATUS_CHOICES, default='i')
 
     def __str__(self):
         return self.title
+
+    def time_to_complete(self):
+        from courses.templatetags.course_extras import time_estimate
+        return '{} min'.format(time_estimate(len(self.description.split())))
 
 class Step(models.Model):
     ''' Step Module that deals with all the steps involved in a a particular
