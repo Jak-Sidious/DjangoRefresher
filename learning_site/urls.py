@@ -23,7 +23,9 @@ from . import views
 urlpatterns = [
     path('courses/', include('courses.urls', namespace='courses')),
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api-auth/', include('rest_framework.urls', 
+                                namespace='rest_framework')),
+    path('api/v1/courses/', include('ed_reviews.urls', namespace='reviews')),
     path('', views.hello_world, name='goHome'),
     path('suggest/', views.suggestion_view, name='suggestion'),
 ]
