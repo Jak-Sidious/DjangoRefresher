@@ -1,3 +1,4 @@
+
 from rest_framework import serializers
 from . import models
 
@@ -9,8 +10,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'course',
-            'email',
-            'review',
+            'comment',
             'rating',
             'created_at'
         )
