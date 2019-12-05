@@ -1,4 +1,7 @@
 from rest_framework import generics
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 
 from . import models
@@ -37,3 +40,21 @@ class RetrieveUpdateDestroyReview(generics.RetrieveUpdateDestroyAPIView):
             course_id=self.kwargs.get('course_pk'),
             pk=self.kwargs.get('pk')
         )
+
+
+class CourseViewSet(viewsets.ModelViewSet):
+    queryset = models.Course.objects.all()
+    serializer_class = serializers.CourseSerializer
+
+    @action(detail=True, methods=['get'])
+    def reviews(self, request, pk=None):
+        course = self.get_object()
+        serializer = serializers.ReviewSerializer(
+            course.reviews.all(), many=True
+        )
+        return Response(serializer.data)
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = models.Review.objects.all()
+    serializer_class = serializers.ReviewSerializer
