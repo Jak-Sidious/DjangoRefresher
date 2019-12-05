@@ -16,11 +16,15 @@ class ReviewSerializer(serializers.ModelSerializer):
         )
         model = models.Review
 
-class CourseSerializer(serializers.ModelSerializer):
+class CourseSerializer(serializers.ModelSerializer): 
+    ##HyperlinkedRelatedField works best with single or few reviews
+    reviews = serializers.PrimaryKeyRelatedField(
+        many=True, read_only=True)
     class Meta:
         fields = (
             'id',
             'title',
             'url',
+            'reviews',
         )
         model = models.Course
