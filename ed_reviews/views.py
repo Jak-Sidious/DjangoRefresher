@@ -43,18 +43,18 @@ class RetrieveUpdateDestroyReview(generics.RetrieveUpdateDestroyAPIView):
             pk=self.kwargs.get('pk')
         )
 
-class isSuperUser(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.method == 'DELETE':
-            if request.user.is_superuser:
-                return True
-        return False
+# class isSuperUser(permissions.BasePermission):
+#     def has_permission(self, request, view):
+#         if request.method == 'DELETE':
+#             if request.user.is_superuser:
+#                 return True
+#         return False
 
 class CourseViewSet(viewsets.ModelViewSet):
-    permission_classes = (
-        isSuperUser,
-        permissions.DjangoModelPermissions,
-    )
+    # permission_classes = (
+    #     isSuperUser,
+    #     permissions.DjangoModelPermissions,
+    # )
     queryset = models.Course.objects.all()
     serializer_class = serializers.CourseSerializer
 
