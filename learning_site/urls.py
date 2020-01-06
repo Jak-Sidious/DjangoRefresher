@@ -17,12 +17,23 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
+from rest_framework import routers
+from ed_reviews import views as view2
 from . import views
+
+
+router = routers.SimpleRouter()
+router.register(r'courses', view2.CourseViewSet)
+router.register(r'reviews', view2.ReviewViewSet)
 
 
 urlpatterns = [
     path('courses/', include('courses.urls', namespace='courses')),
     path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls', 
+                                namespace='rest_framework')),
+    path('api/v1/courses/', include('ed_reviews.urls', namespace='reviews')),
+    path('api/v2/', include((router.urls, "reviews"), namespace="apiv2")),
     path('', views.hello_world, name='goHome'),
     path('suggest/', views.suggestion_view, name='suggestion'),
 ]

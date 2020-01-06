@@ -3,6 +3,7 @@ from django.contrib import admin
 from . import models
 from datetime import date
 
+
 def make_published(modeladmin, request, queryset):
     queryset.update(status='p')
 
