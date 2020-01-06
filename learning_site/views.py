@@ -3,9 +3,9 @@ from django.shortcuts import render
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
+from django.views.generic import View
 from . import forms
-
 
 
 def hello_world(request):
@@ -30,3 +30,7 @@ def suggestion_view(request):
                                  'Thanks for your suggestion!')
             return HttpResponseRedirect(reverse('suggestion'))
     return render(request, 'suggestion_form.html', {'form': form})
+
+class HelloWorldView(View):
+    def get(self, request):
+        return HttpResponse("Hello World!")

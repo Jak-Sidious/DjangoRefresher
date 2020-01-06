@@ -36,6 +36,7 @@ urlpatterns = [
     path('api/v1/courses/', include('ed_reviews.urls', namespace='reviews')),
     path('api/v2/', include((router.urls, "reviews"), namespace="apiv2")),
     path('', views.hello_world, name='goHome'),
+    path('hello/', views.HelloWorldView.as_view(), name='hello'),
     path('suggest/', views.suggestion_view, name='suggestion'),
     path('teams/', include('teams.urls', namespace='teams')),
 ]
