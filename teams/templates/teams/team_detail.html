@@ -12,8 +12,8 @@
 {% endfor %}
 </ul>
 
-{% if user == team.coach %}
 <hr>
+{% if user == team.coach %}
 <form method='POST'>
     {% csrf_token %}
     {{ form.as_p }}
