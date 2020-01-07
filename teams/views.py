@@ -24,10 +24,16 @@ def team_detail(request, pk):
 
 class TeamListView(ListView):
     context_object_name = "teams"
+    fields = ("name", "practice_location", "coach")
     model = models.Team
+    
+    template = "teams/team_detail.html"
 
-class TeamDetailView(DetailView):
+
+class TeamDetailView(DetailView, UpdateView):
     model = models.Team
+    fields = ("name", "practice_location", "coach")
+    template = "teams/team_detail.html"
 
 
 class TeamCreateView(CreateView):
