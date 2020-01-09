@@ -19,6 +19,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
 from rest_framework import routers
 from ed_reviews import views as view2
+from teams import views as view3
 from . import views
 
 
@@ -34,8 +35,10 @@ urlpatterns = [
                                 namespace='rest_framework')),
     path('api/v1/courses/', include('ed_reviews.urls', namespace='reviews')),
     path('api/v2/', include((router.urls, "reviews"), namespace="apiv2")),
-    path('', views.hello_world, name='goHome'),
+    path('', views.HomeView.as_view(), name='goHome'),
+    path('hello/', views.HelloWorldView.as_view(), name='hello'),
     path('suggest/', views.suggestion_view, name='suggestion'),
+    path('teams/', include('teams.urls', namespace='teams')),
 ]
 
 if settings.DEBUG:
